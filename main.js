@@ -57,16 +57,42 @@ const check_Square = (x, y) => {
 }
 
 const place_Square = (x, y) => {
+    const square = gameField[x][y];
+    ctx.fillStyle = "green";
+    ctx.fillRect(square.x, square.y, square_Size - 1, square_Size - 1);
+}
+
+const getFieldColor = (x, y) => {
+    const x_image = gameField[x][0].x;
+    const y_image = gameField[0][y].y;
+    const imageData = ctx.getImageData(x_image, y_image, 1, 1).data;
+    let color = "";
+    if (imageData[1] === 128 && imageData[3] === 255) {
+        color = "green";
+    }
+    else {
+        color = "white";
+    }
+    return color;
+}
+
+const try_Placing = (x, y) => {
     if (check_Boundaries(x, y)) {
-        const square = gameField[x][y];
-        ctx.fillStyle = "green";
-        ctx.fillRect(square.x, square.y, square_Size, square_Size);
+        if (getFieldColor(x, y) === "green") {
+            const square = gameField[x][y];
+            ctx.fillStyle = "red";
+            ctx.fillRect(square.x, square.y, square_Size - 1, square_Size - 1);
+            document.removeEventListener("keydown", keyInputHandler);
+            window.location.reload()
+        } else {
+            place_Square(x, y);
+        }
     } else {
         alert("you lost! Try again");
         document.removeEventListener("keydown", keyInputHandler);
         window.location.reload()
     }
-};
+}
 
 // init and draw game Field
 
@@ -74,7 +100,7 @@ window.addEventListener("load", () => {
     init_Game_Field();
     draw_Game_Field();
     place_Square(0, 0);
-    set_Snake_body_part(partNumber,0,0);
+    set_Snake_body_part(partNumber, 0, 0);
 })
 
 
@@ -82,10 +108,10 @@ window.addEventListener("load", () => {
 
 function keyInputHandler(event) {
     let name = event.key;
-    if (name === "w" || name === "ArrowUp") place_Square(x, --y)
-    else if (name === "s" || name === "ArrowDown") place_Square(x, ++y);
-    else if (name === "a" || name === "ArrowLeft") place_Square(--x, y);
-    else if (name === "d" || name === "ArrowRight") place_Square(++x, y);
+    if (name === "w" || name === "ArrowUp") try_Placing(x, --y)
+    else if (name === "s" || name === "ArrowDown") try_Placing(x, ++y);
+    else if (name === "a" || name === "ArrowLeft") try_Placing(--x, y);
+    else if (name === "d" || name === "ArrowRight") try_Placing(++x, y);
 }
 
 document.addEventListener("keydown", keyInputHandler, false);
