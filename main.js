@@ -114,7 +114,6 @@ const placeFruit = (x, y) => {
     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
     ctx.fillStyle = "red";
     ctx.fill();
-    fruit_exists = true
 }
 /**
  * 
@@ -175,19 +174,30 @@ const getFieldColor = (x, y) => {
  * @param {*} y cord on the game field
  */
 const game_rules = (x, y) => {
+
+    // dont go out of bounds
     if (check_Boundaries(x, y)) {
+
+        // dont eat yourself
         if (getFieldColor(x, y) === "green") {
             const square = gameField[x][y];
             ctx.fillStyle = "yellow";
             ctx.fillRect(square.x, square.y, square_Size - 1, square_Size - 1);
             document.removeEventListener("keydown", keyInputHandler);
             window.location.reload()
+
         } else {
+
+            // eating an apple makes you longer and spawns a new one
             if (getFieldColor(x, y) === "red") {
                 const last_Part_X = snake_parts[partNumbers].x;
                 const last_Part_Y = snake_parts[partNumbers].y;
-                if ((last_Part_X - 1) < 0) add_Snake_Body_Part(last_Part_X, last_Part_Y)
-                else add_Snake_Body_Part(last_Part_X - 1, last_Part_Y);
+                if ((last_Part_X - 1) < 0)
+                    add_Snake_Body_Part(last_Part_X, last_Part_Y)
+                else 
+                    add_Snake_Body_Part(last_Part_X - 1, last_Part_Y);
+                
+                // if you filled the enitre field with your body you won
                 if (gameEndSnakeSize === partNumbers) {
                     alert("you won!!!");
                 }
